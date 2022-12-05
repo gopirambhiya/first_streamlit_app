@@ -1,4 +1,8 @@
 import streamlit
+import pandas
+import requests
+import snowflake.connector
+from urllib.error import URLError
 
 streamlit.title('My Parents New Healthy Diner')
 
@@ -11,7 +15,7 @@ streamlit.text('  🥑🍞 Avacado Toast')
 
 streamlit.header('🍌🥭 Build Your Own Fruit Smoothie 🥝🍇')
 
-import pandas
+
 my_fruit_list = pandas.read_csv("https://uni-lab-files.s3.us-west-2.amazonaws.com/dabw/fruit_macros.txt")
 my_fruit_list = my_fruit_list.set_index('Fruit')
 
@@ -27,7 +31,7 @@ streamlit.header("Fruityvice Fruit Advice!")
 fruit_choice = streamlit.text_input('What fruit would you like information about?','Kiwi')
 streamlit.write('The user entered ', fruit_choice)
 
-import requests
+
 fruityvice_response = requests.get("https://fruityvice.com/api/fruit/"+fruit_choice)
 
 #normalize the input
@@ -35,7 +39,10 @@ fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
 # creates table from the normalized
 streamlit.dataframe(fruityvice_normalized)
 
-import snowflake.connector
+#stop till run
+streamlit.stop()
+
+
 
 my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
 my_cur = my_cnx.cursor()
@@ -45,5 +52,5 @@ streamlit.header("The Fruit Load List Contains:")
 streamlit.dataframe(my_data_rows)
 
 add_my_fruit = streamlit.text_input('Whats fruits would u like to add?')
-my_cur.execute("insert into PC_RIVERY_DB.public.fruit_load_list values("+"'"+add_my_fruit+"'"+")")
+my_cur.execute("insert into PC_RIVERY_DB.public.fruit_load_list values ('from stremlit') ")
 streamlit.text('Thanks for adding: '+add_my_fruit)
